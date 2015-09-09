@@ -10,5 +10,5 @@ write_files:
     path: /tmp/script.sh
 runcmd:
 - /tmp/script.sh
-- git clone https://github.com/onecloud/consuming_lab
+- git clone https://github.com/kumulustech/openstack_for_web_apps
 

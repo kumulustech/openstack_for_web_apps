@@ -1,9 +1,7 @@
 #!/bin/bash
 #
-# Setup an Ubuntu VM with the OpenStack Cloud Tools
-# http://50.250.253.88:8080/v1/AUTH_e71d06beb59a40d1a9e29df6b014444e/osbootcamp/ubuntu-user-data.sh
+# Setup a CentOS VM with the OpenStack Cloud Tools
 
-#apt-get update -y
 yum update -y
 
 yum install python-setuptools python-devel -y

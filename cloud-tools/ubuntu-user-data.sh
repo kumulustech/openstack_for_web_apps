@@ -3,6 +3,8 @@
 # Setup an Ubuntu VM with the OpenStack Cloud Tools
 
 apt-get update -y
+apt-get install python-pip -y
+
 clients='nova
 neutron
 glance
@@ -16,8 +18,12 @@ keystone'
 
 for n in ${clients}
 do
- apt-get install python-${n}client  -y
+  pip install python-${n}client
 done
+
+apt-get install python-pip -y
+
+easy_install --upgrade requests[security]
 
 echo "`ip addr show eth0 | awk '/ inet / {print $2}' | cut -d\/ -f1`  `hostname`" >> /etc/hosts
 
@@ -39,8 +45,8 @@ cat > /home/$user/openrc_first.sh <<EOF
 export OS_AUTH_URL=https://chrcnc-api.os.cloud.twc.net:5000/v2.0
 
 # With the addition of Keystone we have standardized on the term **tenant**
-# as the entity that owns the resources.  We really only need the Tenant Name
-# export OS_TENANT_ID=88d8c5d66153476d9d96ca98df9b0894
+# as the entity that owns the resources.
+
 echo "Please enter your OpenStack Tenant Name: "
 read -r OS_TENANT_INPUT
 export OS_TENANT_NAME=\$OS_TENANT_INPUT

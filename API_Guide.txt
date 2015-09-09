@@ -18,7 +18,7 @@ NOTE:  If you are running this on DevStack, you can run these commands nearly as
 # Get token, manually copy token and tenant info into export commands. These allow these identifiers to be called in later curl commands with the ${NAME} syntax rather than being added each time.
 
 export endpoint=${REPLACE_WITH_ENDPOINT_ADDRESS:-dnvrco-api.os.cloud.twc.net}
-curl -i "https://${endpoint}:5000/v2.0/tokens" -X POST -H "Content-Type: application/json" -H "Accept: application/json"  -d '{"auth": {"tenantName": "admin", "passwordCredentials": {"username": "admin", "password": "ubuntu"}}}' | python -mjson.tool
+curl -i "https://${endpoint}:5000/v2.0/tokens" -X POST -H "Content-Type: application/json" -H "Accept: application/json"  -d '{"auth": {"tenantName": "admin", "passwordCredentials": {"username": "admin", "password": "ubuntu"}}}' | tail -n 1 | python -mjson.tool
 
 export token=REPLACE_WITH_ACCESS_TOKEN_ID
 
@@ -28,10 +28,10 @@ export tenant_id=REPLACE_WITH_ACCESS_TENANT_ID
 curl -v -H "X-Auth-Token:${token}" https://${endpoint}:8774/v2/${tenant_id}/servers | tail -n 1 | python -mjson.tool
 
 # Get service list— seem to get service list with prior command…
-curl -s \ -H "X-Auth-Token: ${token}" \ https://${endpoint}:5000/v3/services | python -mjson.tool
+curl -s \ -H "X-Auth-Token: ${token}" \ https://${endpoint}:5000/v3/services | tail -n 1 | python -mjson.tool
 
 # keystone service-list --debug
-curl -i -X GET https://${endpoint}:35357/v2.0/OS-KSADM/services -H "User-Agent: python-keystoneclient" -H "X-Auth-Token: ${token}" | python -mjson.tool
+curl -i -X GET https://${endpoint}:35357/v2.0/OS-KSADM/services -H "User-Agent: python-keystoneclient" -H "X-Auth-Token: ${token}" | tail -n 1 | python -mjson.tool
 
 #Use service id from prior command to find service endpoint for glance and nova. First five alpha-numeric characters should be enough to differentiate from other listed endpoints in following step. For example:
     {
@@ -53,7 +53,7 @@ So glance= 5cf44… and nova= 5c817…
 
 
 # Get endpoints list
-curl -i -X GET https://${endpoint}:35357/v2.0/endpoints -H "User-Agent: python-keystoneclient" -H "X-Auth-Token: ${token}" | python -mjson.tool
+curl -i -X GET https://${endpoint}:35357/v2.0/endpoints -H "User-Agent: python-keystoneclient" -H "X-Auth-Token: ${token}" | tail -n 1 | python -mjson.tool
 
 For Example: NOVA ENDPOINT
   {
@@ -83,7 +83,7 @@ curl -s https://${endpoint}:8774/v2/${tenant_id}/images
 -X GET 
 -H "X-Auth-Project-Id: admin" 
 -H "Accept: application/json" 
--H "X-Auth-Token: ${token} | python -mjson.tool
+-H "X-Auth-Token: ${token} | tail -n 1 | python -mjson.tool
 
 export image_id=REPLACE_WITH_IMAGE_ID
 
@@ -93,7 +93,7 @@ curl -s https://${endpoint}:8774/v2/${tenant_id}/flavors
 -X GET 
 -H "X-Auth-Project-Id: admin" 
 -H "Accept: application/json" 
--H "X-Auth-Token: ${token}" | python -mjson.tool
+-H "X-Auth-Token: ${token}" | tail -n 1 | python -mjson.tool
 
 export flavor_id= REPLACE_WITH_FLAVOR_ID
 

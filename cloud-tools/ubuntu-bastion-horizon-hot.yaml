@@ -74,25 +74,27 @@ resources:
             chsh -s /bin/bash $user
 
             apt-get update -y
+            apt-get install python-pip -y
+
             clients='nova
             neutron
             glance
             heat
             cinder
+            swift
+            monasca
             designate
             openstack
             keystone'
 
             for n in ${clients}
             do
-             apt-get install python-${n}client  -y
+              pip install python-${n}client
             done
 
             apt-get install python-pip -y
-            pip install --upgrade python-swiftclient
-            pip install --upgrade python-monascaclient
-            easy_install --upgrade requests[security]
 
+            easy_install --upgrade requests[security]
 
             echo "`ip addr show eth0 | awk '/ inet / {print $2}' | cut -d\/ -f1`  `hostname`" >> /etc/hosts
 
