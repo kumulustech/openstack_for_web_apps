@@ -48,18 +48,18 @@ parameters:
     label: Server Name
     default: cloud-tools
 
-  floating_ip_id:
-    type: string
-    label: ID of Floating IP
-
-  # # Perhaps it will be possible to allocate via IP address
-  # # In the future, in which case this param may be useful
-  # floating_ip:
+  # floating_ip_id:
   #   type: string
-  #   label: Floating IP address
-  #   constraints:
-  #     - allowed_pattern: "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
-  #       description: This must be a valid IP address
+  #   label: ID of Floating IP
+
+  # Perhaps it will be possible to allocate via IP address
+  # In the future, in which case this param may be useful
+  floating_ip:
+    type: string
+    label: Floating IP address
+    # constraints:
+    #   - allowed_pattern: "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+    #     description: This must be a valid IP address
 
 resources:
   cloud_tools:
@@ -156,20 +156,36 @@ resources:
     properties:
       network: { get_param: network }
 
-  server_1_floating_ip_association:
-    type: OS::Neutron::FloatingIPAssociation
-    properties:
-      floatingip_id: { get_param: floating_ip_id }
-      port_id: { get_resource: server_1_port }
+  # server_1_floating_ip_association:
+  #   type: OS::Neutron::FloatingIPAssociation
+  #   properties:
+  #     floatingip_id: { get_param: floating_ip_id }
+  #     port_id: { get_resource: server_1_port }
 
   # # If the Nova version is fixed, perhaps we can just
   # # pass via IP address
 
-  # server_1_floating_ip_association:
-  #   type: OS::Nova::FloatingIPAssociation
+  server_1_floating_ip_association:
+    type: OS::Nova::FloatingIPAssociation
+    properties:
+      floating_ip: { get_param: floating_ip }
+      server_id: { get_resource: cloud_tools }
+
+  # domain_record:
+  #   type: OS::Designate::Record
   #   properties:
-  #     floating_ip: { get_param: floating_ip }
-  #     server_id: { get_resource: cloud_tools }
+  #     data: { get_attr: [server_1_floating_ip_association,show]}
+  #     description:
+  #       list_join:
+  #       - .
+  #       - [ {get_param: user_name}, .rstarmer-class.cloud.twc.net.]
+  #     domain: 3cd968f7-e134-43f9-b7b7-238a2df45560
+  #     name:
+  #       list_join:
+  #       - .
+  #       - [{ get_param: user_name }, rstarmer-class.cloud.twc.net.]
+  #     ttl: 60
+  #     type: A
 
 outputs:
   server_floating_ip:
