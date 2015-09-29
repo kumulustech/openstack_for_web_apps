@@ -4,6 +4,7 @@
 
 apt-get update -y
 apt-get install python-pip -y
+apt-get install python-dev -y
 
 clients='nova
 neutron
@@ -29,7 +30,7 @@ echo "`ip addr show eth0 | awk '/ inet / {print $2}' | cut -d\/ -f1`  `hostname`
 user=`ls /home | head -1`
 cat > /home/$user/openrc.sh <<EOF
 #!/bin/bash
-
+export OS_AUTH_URL=https://dnvrco-api.os.cloud.twc.net:5000/v2.0
 export OS_TENANT_NAME=rstarmer-class
 echo "Your Tenant Name is: \${OS_TENANT_NAME}"
 export OS_PROJECT_NAME=rstarmer-class
