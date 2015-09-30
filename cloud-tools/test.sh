@@ -1,9 +1,9 @@
 #!/bin/bash
 set -ex 
 
-vmname=${1:-admin}
-keyname=${2:-class2}
-netname=${3:-private}
+vmname=${1:-rhs}
+keyname=${2:-rhs}
+netname=${3:-default-network}
 cat > data.txt <<EOD
 #!/bin/bash
 passwd ubuntu <<EOF
