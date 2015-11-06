@@ -11,6 +11,8 @@ parameters:
     type: string
     label: Key Name
     description: Name of key-pair to be used for compute instance
+    constraints:
+      - custom_constraint: nova.keypair
   image:
     type: string
     label: Image Name
@@ -19,8 +21,13 @@ parameters:
   instance_type:
     type: string
     label: Instance Type
-    default: m3.2CPU.2GB
+    default: m3.1CPU.2GB
     description: Type of instance (flavor) to be used
+    constraints:
+      - allowed_values:
+        - m3.2CPU.2GB
+        - m3.2CPU.4GB
+        - m3.1CPU.2GB
   network:
     type: string
     label: Network Name
@@ -43,7 +50,7 @@ parameters:
     label: Tenant User Name
     default: E1234567
     constraints:
-      - allowed_pattern: "E[0-9]*"
+      - allowed_pattern: "E[0-9]*|rstarmer"
         description: User name must start with an uppercase E and character
 
 resources:
