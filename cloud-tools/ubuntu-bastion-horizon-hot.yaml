@@ -19,7 +19,7 @@ parameters:
   instance_type:
     type: string
     label: Instance Type
-    default: standard.small
+    default: m3.2CPU.2GB
     description: Type of instance (flavor) to be used
   network:
     type: string
@@ -34,15 +34,17 @@ parameters:
   tenant_name:
     type: string
     label: Tenant Project Name
+    default: rstarmer-class
     constraints:
       - allowed_pattern: "[a-z]+[a-zA-Z0-9-]*"
         description: User name must start with an uppercase character
   user_name:
     type: string
     label: Tenant User Name
+    default: E1234567
     constraints:
-      - allowed_pattern: "[a-z]+[a-zA-Z0-9]*"
-        description: User name must start with an uppercase character
+      - allowed_pattern: "E[0-9]*"
+        description: User name must start with an uppercase E and character
 
 resources:
   cloud_tools:
@@ -103,7 +105,7 @@ resources:
             export OS_AUTH_URL=https://chrcnc-api.os.cloud.twc.net:5000/v2.0
             export OS_TENANT_NAME="$tenant_name"
             export OS_USERNAME="$user_name"
-            export OS_REGION_NAME="NCE"
+            export OS_REGION_NAME="NCW"
 
             echo "Please enter your OpenStack Password: "
             read -sr OS_PASSWORD_INPUT
