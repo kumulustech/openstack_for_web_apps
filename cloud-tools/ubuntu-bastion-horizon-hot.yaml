@@ -101,15 +101,13 @@ resources:
               pip install python-${n}client
             done
 
-            apt-get install python-pip -y
-
             easy_install --upgrade requests[security]
 
             echo "`ip addr show eth0 | awk '/ inet / {print $2}' | cut -d\/ -f1`  `hostname`" >> /etc/hosts
 
             cat > /home/$user/openrc.sh <<EOF
             #!/bin/bash
-            export OS_AUTH_URL=https://chrcnc-api.os.cloud.twc.net:5000/v2.0
+            export OS_AUTH_URL=https://dnvrco-api.os.cloud.twc.net:5000/v2.0
             export OS_TENANT_NAME="$tenant_name"
             export OS_USERNAME="$user_name"
             export OS_REGION_NAME="NCW"
@@ -118,7 +116,7 @@ resources:
             read -sr OS_PASSWORD_INPUT
             export OS_PASSWORD=\$OS_PASSWORD_INPUT
 
-            export PS1='[\u@\h \W(nce)]\$ '
+            export PS1='[\u@\h \W(ncw)]\$ '
             EOF
 
             cat > /home/$user/w.sh <<EOF
