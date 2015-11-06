@@ -83,9 +83,13 @@ resources:
             chsh -s /bin/bash $user
 
             apt-get update -y
-            apt-get install python-pip -y
+            apt-get install python-pip python-dev -y
+            apt-get install libffi-dev libssl-dev build-essential -y
 
-            clients='nova
+            pip install -U pyopenssl ndg-httpsclient pyasn1 urllib3[secure]
+
+            clients='openstack
+            nova
             neutron
             glance
             heat
@@ -93,12 +97,11 @@ resources:
             swift
             monasca
             designate
-            openstack
             keystone'
 
             for n in ${clients}
             do
-              pip install python-${n}client
+              pip install -U python-${n}client
             done
 
             easy_install --upgrade requests[security]
@@ -109,6 +112,7 @@ resources:
             #!/bin/bash
             export OS_AUTH_URL=https://dnvrco-api.os.cloud.twc.net:5000/v2.0
             export OS_TENANT_NAME="$tenant_name"
+            export OS_PROJECT_NAME="$tenant_name"
             export OS_USERNAME="$user_name"
             export OS_REGION_NAME="NCW"
 
@@ -135,6 +139,7 @@ resources:
             export PS1='[\u@\h \W(nce)]\$ '
             EOF
 
+            chown $user.$user /home/$user/*.sh
 
           params:
             $tenant_name: { get_param: tenant_name}
@@ -162,5 +167,3 @@ outputs:
   server_info:
     description: values of server
     value: { get_attr: [cloud_tools, show]}
-
-

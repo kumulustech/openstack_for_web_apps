@@ -3,10 +3,13 @@
 # Setup an Ubuntu VM with the OpenStack Cloud Tools
 
 apt-get update -y
-apt-get install python-pip -y
-apt-get install python-dev -y
+apt-get install python-pip python-dev -y
+apt-get install libffi-dev libssl-dev build-essential -y
 
-clients='nova
+pip install -U pyopenssl ndg-httpsclient pyasn1 urllib3[secure]
+
+clients='openstack
+nova
 neutron
 glance
 heat
@@ -14,16 +17,15 @@ cinder
 swift
 monasca
 designate
-openstack
 keystone'
 
 for n in ${clients}
 do
-  pip install python-${n}client
+  pip install -U python-${n}client
 done
 
-# Attempt to fix URLlib3 SSL security issue
 easy_install --upgrade requests[security]
+
 
 echo "`ip addr show eth0 | awk '/ inet / {print $2}' | cut -d\/ -f1`  `hostname`" >> /etc/hosts
 
@@ -53,3 +55,5 @@ export OS_REGION_NAME="NCW"
 echo "Your region is set to \${OS_REGION_NAME}"
 export PS1='[\u@\h \W(nce)]\$ '
 EOF
+
+chown $user.$user /home/$user/*.sh

@@ -1,4 +1,4 @@
-heat_template_version: 2013-05-23
+heat_template_version: 2015-04-30
 
 description: >
   Simple template to deploy a bastion host with the CLI tools
@@ -11,6 +11,8 @@ parameters:
     label: Key Name
     default: default
     description: Name of key-pair to be used for compute instance
+    constraints:
+      - custom_constraint: nova.keypair
   image:
     type: string
     label: Image Name
@@ -19,7 +21,7 @@ parameters:
   instance_type:
     type: string
     label: Instance Type
-    default: standard.small
+    default: m3.1CPU.2GB
     description: Type of instance (flavor) to be used
   network:
     type: string
@@ -34,19 +36,17 @@ parameters:
   tenant_name:
     type: string
     label: Tenant Project Name
+    default: rstarmer-class
     constraints:
       - allowed_pattern: "[a-z]+[a-zA-Z0-9-]*"
-        description: User name must start with a lowercase character
+        description: Project name must start with a lowercase character
   user_name:
     type: string
     label: Tenant User Name
+    default: rstarmer
     constraints:
-      - allowed_pattern: "[a-z]+[a-zA-Z0-9]*"
-        description: User name must start with a lowercase character
-  server_name:
-    type: string
-    label: Server Name
-    default: cloud-tools
+      - allowed_pattern: "E[0-9]+|rstarmer"
+        description: User name must be an EID (E####) or rstarmer
 
   # floating_ip_id:
   #   type: string
@@ -56,16 +56,17 @@ parameters:
   # In the future, in which case this param may be useful
   floating_ip:
     type: string
-    label: Floating IP address
-    # constraints:
-    #   - allowed_pattern: "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
-    #     description: This must be a valid IP address
+    label: Floating IP address ID
+    default: 2209f5bf-9ad7-4280-88ea-5b40e5208d50
+
+      # - allowed_pattern: "^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+      #   description: This must be a valid IP address
 
 resources:
   cloud_tools:
     type: OS::Nova::Server
     properties:
-      name: { get_param: server_name }
+      name: { get_param: user_name }
       key_name: { get_param: key_name }
       admin_user: ubuntu
       image: { get_param: image }
@@ -77,8 +78,6 @@ resources:
           template: |
             #!/bin/bash
             #
-            # Setup an Ubuntu VM with the OpenStack Cloud Tools
-            # http://50.250.253.88:8080/v1/AUTH_e71d06beb59a40d1a9e29df6b014444e/osbootcamp/ubuntu-user-data.sh
 
             # Determine the local cloud user, most likely the
             # Only user in the /home diretory, and for an
@@ -92,9 +91,13 @@ resources:
             chsh -s /bin/bash $user
 
             apt-get update -y
-            apt-get install python-pip -y
+            apt-get install python-pip python-dev -y
+            apt-get install libffi-dev libssl-dev build-essential -y
 
-            clients='nova
+            pip install -U pyopenssl ndg-httpsclient pyasn1 urllib3[secure]
+
+            clients='openstack
+            nova
             neutron
             glance
             heat
@@ -102,15 +105,12 @@ resources:
             swift
             monasca
             designate
-            openstack
             keystone'
 
             for n in ${clients}
             do
-              pip install python-${n}client
+              pip install -U python-${n}client
             done
-
-            apt-get install python-pip -y
 
             easy_install --upgrade requests[security]
 
@@ -118,16 +118,17 @@ resources:
 
             cat > /home/$user/openrc.sh <<EOF
             #!/bin/bash
-            export OS_AUTH_URL=https://chrcnc-api.os.cloud.twc.net:5000/v2.0
+            export OS_AUTH_URL=https://dnvrco-api.os.cloud.twc.net:5000/v2.0
             export OS_TENANT_NAME="$tenant_name"
+            export OS_PROJECT_NAME="$tenant_name"
             export OS_USERNAME="$user_name"
-            export OS_REGION_NAME="NCE"
+            export OS_REGION_NAME="NCW"
 
             echo "Please enter your OpenStack Password: "
             read -sr OS_PASSWORD_INPUT
             export OS_PASSWORD=\$OS_PASSWORD_INPUT
 
-            export PS1='[\u@\h \W(nce)]\$ '
+            export PS1='[\u@\h \W(ncw)]\$ '
             EOF
 
             cat > /home/$user/w.sh <<EOF
@@ -146,6 +147,7 @@ resources:
             export PS1='[\u@\h \W(nce)]\$ '
             EOF
 
+            chown $user.$user /home/$user/*.sh
 
           params:
             $tenant_name: { get_param: tenant_name}
@@ -171,22 +173,6 @@ resources:
       floating_ip: { get_param: floating_ip }
       server_id: { get_resource: cloud_tools }
 
-  # domain_record:
-  #   type: OS::Designate::Record
-  #   properties:
-  #     data: { get_attr: [server_1_floating_ip_association,show]}
-  #     description:
-  #       list_join:
-  #       - .
-  #       - [ {get_param: user_name}, .rstarmer-class.cloud.twc.net.]
-  #     domain: 3cd968f7-e134-43f9-b7b7-238a2df45560
-  #     name:
-  #       list_join:
-  #       - .
-  #       - [{ get_param: user_name }, rstarmer-class.cloud.twc.net.]
-  #     ttl: 60
-  #     type: A
-
 outputs:
   server_floating_ip:
     description: The Floating IP address of the deployed server
@@ -194,6 +180,3 @@ outputs:
   server_info:
     description: values of server
     value: { get_attr: [cloud_tools, show]}
-
-
-
