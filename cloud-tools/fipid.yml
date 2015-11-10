@@ -1,0 +1,4 @@
+parameters:
+  host_name: fipid-dns-test
+  key_name: rhs
+  floating_ip_id: acd1804e-f9c8-42b3-a227-ba07a0b4b330

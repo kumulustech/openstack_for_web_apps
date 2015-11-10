@@ -1,4 +1,4 @@
 parameters:
   user_name: rstarmer
   key_name: rhs
-#  floating_ip: fe87b77c-bbbe-4091-a27a-9d31c76b77cd
+  floating_ip: bfe14be0-6345-44c7-9667-7b7da5656b18
