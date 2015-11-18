@@ -15,7 +15,7 @@ parameters:
   instance_type:
     type: string
     label: Instance Type
-    default: standard.small
+    default: m3.2CPU.2GB
     description: Type of instance (flavor) to be used
   network:
     type: string

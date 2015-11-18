@@ -17,7 +17,7 @@ parameters:
   flavor:
     type: string
     description: Flavor for the server to be created
-    default: standard.small
+    default: m3.2CPU.2GB
     constraints:
       - custom_constraint: nova.flavor
   image:
