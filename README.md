@@ -3,7 +3,7 @@ Lab material for Consuming Cloud
 
 Most of the class material has moved to:
 
-  http://kumul.us/learn
+  http://learn.kumul.us/
 
 The cloud-tools directory, however, includes
 some user-data scripts and heat templates that
